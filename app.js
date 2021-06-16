@@ -41,9 +41,22 @@ const promptUser = () => {
             }
         },
         {
+            type:"confirm",
+            name:"aboutConfirm",
+            message:"Do you wish to include an about section in your portfolio?",
+            default:"true"
+        },
+        {
             type: "input",
             name:"about",
-            message:"Provide some information about yourself:"
+            message:"Provide some information about yourself:",
+            when: ({aboutConfirm}) => {
+                if (aboutConfirm) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
     ])
 };
