@@ -1,15 +1,7 @@
 const { prompt } = require("inquirer");
 const inquirer = require("inquirer");
-const fs = require("fs");
 const generatePage = require("./src/page-template.js");
-
-// const [name, gitHub] = profileDataArgs;
-
-
-// fs.writeFile("./index.html", generatePage(name, gitHub), err => {
-//     if (err) throw err;
-//     console.log('Portfolio complete! Check out index.html to see the output!');
-// })
+const { writeFile, copyFile } = require("./utils/generate-site.js");
 
 const promptUser = () => {
     return inquirer
@@ -138,14 +130,30 @@ const promptProject = portfolioData => {
         }
     });
 };
+// asks for user information
 promptUser()
-  .then(promptProject)
-  .then(portfolioData => {
+    // For each new project go through promptProject
+    .then(promptProject)
+    // Generate page by passing through portfolioData promise
+    .then(portfolioData => {
     console.log(portfolioData);
-    const pageHTML = generatePage(portfolioData);
-
-    fs.writeFile('./index.html', pageHTML, err => {
-        if (err) throw new Error(err);
-        console.log('Page created! Check out index.html in this directory to see it!');
+    return generatePage(portfolioData);
     })
-  });
+    // Pass through the HTML to the write file
+    .then(pageHTML => {
+        return writeFile(pageHTML)
+    })
+    // If write file succeeds copy over CSS file
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    // Show successful copy
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);
+    })
+    // If any step errors out, display it in console log
+    .catch(err => {
+        console.log(err)
+    })
+
